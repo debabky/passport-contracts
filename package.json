@@ -40,6 +40,7 @@
     "typechain": "8.3.2"
   },
   "devDependencies": {
+    "@iden3/js-crypto": "^1.0.3",
     "@metamask/eth-sig-util": "^7.0.1",
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.6",
     "@nomicfoundation/hardhat-ethers": "^3.0.5",
@@ -54,6 +55,7 @@
     "@types/node": "^18.16.0",
     "bignumber.js": "^9.1.2",
     "chai": "^4.4.1",
+    "circomlibjs": "^0.1.7",
     "ethers": "^6.11.1",
     "hardhat-contract-sizer": "^2.10.0",
     "hardhat-gas-reporter": "^2.0.2",

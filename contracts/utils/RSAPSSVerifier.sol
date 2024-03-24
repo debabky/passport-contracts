@@ -144,6 +144,10 @@ library RSAPSSVerifier {
         bytes memory e_,
         bytes memory n_
     ) internal view returns (bool) {
+        if (s_.length == 0 || e_.length == 0 || n_.length == 0) {
+            return false;
+        }
+
         bytes memory decipher_ = decrypt(s_, e_, n_);
 
         return pss(message_, decipher_);
@@ -155,6 +159,10 @@ library RSAPSSVerifier {
         bytes memory e_,
         bytes memory n_
     ) internal view returns (bool) {
+        if (s_.length == 0 || e_.length == 0 || n_.length == 0) {
+            return false;
+        }
+
         bytes memory decipher_ = decrypt(s_, e_, n_);
 
         assembly {

@@ -32,20 +32,24 @@ contract Registration is PoseidonSMT, Initializable {
     }
 
     function register(
-        bytes32 userInternalPublicKey_,
+        bytes32 userInternalPublicKeyX_,
+        bytes32 userInternalPublicKeyY_,
         bytes memory s_,
         bytes memory n_,
         VerifierHelper.ProofPoints memory zkPoints_,
-        uint256 proofTimestamp_
+        uint256 proofTimestamp_,
+        uint256 group1Hash_
     ) external {
         bytes memory challenge_ = new bytes(8);
 
-        uint256 hashedInternalKey_ = PoseidonUnit1L.poseidon([uint256(userInternalPublicKey_)]);
+        uint256 hashedInternalKey_ = PoseidonUnit2L.poseidon(
+            [uint256(userInternalPublicKeyX_), uint256(userInternalPublicKeyY_)]
+        );
         uint256 hashedRSAKey_ = PoseidonUnit5L.poseidon(_decomposeRSAKey(n_));
         uint256 parsedProofTimestamp_ = _parseTimestamp(proofTimestamp_);
 
         for (uint256 i = 0; i < challenge_.length; ++i) {
-            challenge_[i] = bytes1(uint8((hashedInternalKey_ << (8 * i)) >> 248));
+            challenge_[i] = bytes1(uint8(hashedInternalKey_ >> (8 * i)));
         }
 
         require(
@@ -53,23 +57,24 @@ contract Registration is PoseidonSMT, Initializable {
             "Registration: invalid passport signature"
         );
 
-        uint256[] memory pubSignals_ = new uint256[](3);
+        uint256[] memory pubSignals_ = new uint256[](4);
 
         pubSignals_[0] = hashedRSAKey_;
         pubSignals_[1] = uint256(icaoMasterTreeMerkleRoot);
         pubSignals_[2] = proofTimestamp_;
+        pubSignals_[3] = group1Hash_;
 
         require(parsedProofTimestamp_ > block.timestamp - 1 days, "Registration: proof expired");
         require(verifier.verifyProof(pubSignals_, zkPoints_), "Registration: invalid zk proof");
 
         _add(
-            bytes32(PoseidonUnit2L.poseidon([hashedRSAKey_, uint256(userInternalPublicKey_)])),
-            bytes32(hashedInternalKey_)
+            bytes32(PoseidonUnit2L.poseidon([hashedRSAKey_, hashedInternalKey_])),
+            bytes32(group1Hash_)
         );
     }
 
     function _parseTimestamp(uint256 proofTimestamp_) private pure returns (uint256) {
-        uint256 year_ = (proofTimestamp_ >> 16) & 255;
+        uint256 year_ = 2000 + ((proofTimestamp_ >> 16) & 255);
         uint256 month_ = (proofTimestamp_ >> 8) & 255;
         uint256 day_ = proofTimestamp_ & 255;
 

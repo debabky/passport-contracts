@@ -1,6 +1,6 @@
 import { ethers } from "hardhat";
 import { expect } from "chai";
-import { Reverter } from "@/test/helpers/reverter";
+import { Reverter } from "@/test/helpers/";
 
 import { RSAPSSVerifierMock } from "@ethers-v6";
 
@@ -19,7 +19,7 @@ describe("RSAPSS", () => {
 
   afterEach(reverter.revert);
 
-  describe("mgf", () => {
+  describe("#mgf", () => {
     it("should correctly encode", async () => {
       const someBytes = ethers.hexlify(ethers.toUtf8Bytes("I like to swim."));
       const len = 20;
@@ -34,7 +34,7 @@ describe("RSAPSS", () => {
     });
   });
 
-  describe("verify", () => {
+  describe("#verify", () => {
     it("should verify the RSA PSS signature", async () => {
       const msg = "abcdefghijklmnopqrstuvwxyz\n";
 
