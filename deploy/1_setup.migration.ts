@@ -1,8 +1,15 @@
 import { ethers } from "hardhat";
 import { Deployer, Reporter } from "@solarity/hardhat-migrate";
+import { deployPoseidons } from "./helper";
+
 import { Registration__factory, VotingFactory__factory, Voting__factory, VerifierMock__factory } from "@ethers-v6";
 
 export = async (deployer: Deployer) => {
+  await deployPoseidons(
+    deployer,
+    new Array(6).fill(6).map((_, i) => i + 1),
+  );
+
   const registration = await deployer.deploy(Registration__factory);
   const votingFactory = await deployer.deploy(VotingFactory__factory);
   const votingImpl = await deployer.deploy(Voting__factory);
